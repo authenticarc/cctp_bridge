@@ -1,0 +1,27 @@
+2025-11-26 16:11:51,487 [INFO] MainThread executing 6261537 on medium cluster
+2025-11-26 16:11:52,545 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:11:53,745 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:11:54,946 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:11:56,145 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:11:57,341 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:11:58,536 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:11:59,731 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:12:00,924 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:12:02,121 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:12:03,316 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:04,511 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:05,707 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:06,904 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:08,098 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:09,294 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:10,498 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:11,694 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:12,921 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:14,115 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:15,310 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:16,505 [INFO] MainThread waiting for query execution 01KB0EYZHQ7VABGM4ZMEPRG6RD to complete: ExecutionState.EXECUTING
+2025-11-26 16:12:17,979 [INFO] MainThread [CCTP] start, total=10, workers=8
+2025-11-26 16:12:21,653 [ERROR] ThreadPoolExecutor-0_1 tx=0x0f6d2eb63e41c7558143d7a3c7f2ffcabe31d159d69d2523f1c9a0e923714e20 job_id=YXJiMS8weDQ5NzY2ODJmMTY1ZTEyZTIxZmRkNzI5Yjc4NDFkZDYyMzg5M2ZlZTU2YTI3OTkxNDhlMmRhZmNjMTk2Y2ExYjE /api/status request exception: SSLError(MaxRetryError("HTTPSConnectionPool(host='usdc.range.org', port=443): Max retries exceeded with url: /api/status?id=YXJiMS8weDQ5NzY2ODJmMTY1ZTEyZTIxZmRkNzI5Yjc4NDFkZDYyMzg5M2ZlZTU2YTI3OTkxNDhlMmRhZmNjMTk2Y2ExYjE (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')))"))
+2025-11-26 16:12:23,700 [INFO] MainThread [CCTP] progress 5/10 (50.0%), elapsed=5.7s
+2025-11-26 16:12:30,618 [INFO] MainThread [CCTP] progress 10/10 (100.0%), elapsed=12.6s
+2025-11-26 16:12:30,623 [INFO] MainThread [CCTP] success 10/10, elapsed 12.64s

@@ -114,7 +114,10 @@ def fetch_cctp_pair(tx_hash: str) -> dict | None:
     #     "http": 'http://user:pass@host:port',
     #     "https": 'http://user:pass@host:port',
     # }
-    proxies = None
+    proxies = {
+        "http": 'http://clyderen-zone-custom:123456@b2bcc08abc0815ee.qzc.na.ipidea.online:2336',
+        "https": 'http://clyderen-zone-custom:123456@b2bcc08abc0815ee.qzc.na.ipidea.online:2336',
+    }
 
     # -------- Step 1: call /transactions -------
     url1 = f"https://usdc.range.org/transactions?s={tx_hash}"

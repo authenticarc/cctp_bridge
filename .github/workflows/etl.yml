@@ -31,7 +31,7 @@ jobs:
         env:
           HTTP_TIMEOUT:     "6"
           MAX_WORKERS:      "128"
-          OUTPUT_PATH:      "data/cctp_data.csv"
+          OUTPUT_PATH:      "data/cctp_tx_mapping.csv"
         run: |
           python src/main.py
 
@@ -41,8 +41,8 @@ jobs:
           if [[ -n "$(git status --porcelain)" ]]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/cctp_data.csv
-            git commit -m "auto: update cctp_data.csv"
+            git add data/cctp_tx_mapping.csv
+            git commit -m "auto: update cctp_tx_mapping.csv"
             git push
           else
             echo "No changes to commit."

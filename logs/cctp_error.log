@@ -25,3 +25,165 @@
 2025-11-26 16:12:23,700 [INFO] MainThread [CCTP] progress 5/10 (50.0%), elapsed=5.7s
 2025-11-26 16:12:30,618 [INFO] MainThread [CCTP] progress 10/10 (100.0%), elapsed=12.6s
 2025-11-26 16:12:30,623 [INFO] MainThread [CCTP] success 10/10, elapsed 12.64s
+2025-11-26 16:48:13,359 [INFO] MainThread executing 6261537 on medium cluster
+2025-11-26 16:48:14,392 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:15,595 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:16,792 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:17,988 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:19,194 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:20,394 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:21,590 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:22,794 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:23,989 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:25,186 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.PENDING (queue position: None)
+2025-11-26 16:48:26,384 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:27,580 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:28,780 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:29,978 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:31,175 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:32,373 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:33,570 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:34,777 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:35,973 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:37,170 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:38,367 [INFO] MainThread waiting for query execution 01KB0H1JA0YP9SSJ3AGCKKWZAZ to complete: ExecutionState.EXECUTING
+2025-11-26 16:48:39,845 [INFO] MainThread [CCTP] start, total=100, workers=8
+2025-11-26 16:48:44,755 [INFO] MainThread [CCTP] progress 5/100 (5.0%), elapsed=4.9s
+2025-11-26 16:48:51,472 [INFO] MainThread [CCTP] progress 10/100 (10.0%), elapsed=11.6s
+2025-11-26 16:48:54,144 [INFO] MainThread [CCTP] progress 15/100 (15.0%), elapsed=14.3s
+2025-11-26 16:48:56,103 [ERROR] ThreadPoolExecutor-0_2 tx=0x5ae6c1fcbaa5c5f3845bd06f433420a895b7a3a34bae41d5187bcf369de7f88a job_id=MTUvMHgxMmJhMWVhN2E1YzQwMzQzMzBkMDlhMTIzY2RjZmE5NDdmMWFjOWU4NDA3NjI4YWExMWJjMWVmOTc1ODc5Y2E0 /api/status request exception: ReadTimeout(ReadTimeoutError("HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)"))
+2025-11-26 16:48:58,770 [INFO] MainThread [CCTP] progress 20/100 (20.0%), elapsed=18.9s
+2025-11-26 16:49:01,790 [INFO] MainThread [CCTP] progress 25/100 (25.0%), elapsed=21.9s
+2025-11-26 16:49:06,257 [INFO] MainThread [CCTP] progress 30/100 (30.0%), elapsed=26.4s
+2025-11-26 16:49:10,080 [INFO] MainThread [CCTP] progress 35/100 (35.0%), elapsed=30.2s
+2025-11-26 16:49:11,897 [ERROR] ThreadPoolExecutor-0_6 tx=0x9db117055bbee87f92da88935ac1aec3c53168fbd285d5441d70487195cced06 job_id=YmFzZS8weGVjNzQ1NjdiMDgxMGI1YWYxODVjMWEzOTk2MGJhYTFhZDQ1ZmMxYjdiMTRiZjI5N2NkOGI2NDE5OTE2OTViYWQ /api/status request exception: ReadTimeout(ReadTimeoutError("HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)"))
+2025-11-26 16:49:13,386 [INFO] MainThread [CCTP] progress 40/100 (40.0%), elapsed=33.5s
+2025-11-26 16:49:16,175 [INFO] MainThread [CCTP] progress 45/100 (45.0%), elapsed=36.3s
+2025-11-26 16:49:19,300 [INFO] MainThread [CCTP] progress 50/100 (50.0%), elapsed=39.5s
+2025-11-26 16:49:21,923 [INFO] MainThread [CCTP] progress 55/100 (55.0%), elapsed=42.1s
+2025-11-26 16:49:26,626 [INFO] MainThread [CCTP] progress 60/100 (60.0%), elapsed=46.8s
+2025-11-26 16:49:31,528 [INFO] MainThread [CCTP] progress 65/100 (65.0%), elapsed=51.7s
+2025-11-26 16:49:32,765 [INFO] MainThread [CCTP] progress 70/100 (70.0%), elapsed=52.9s
+2025-11-26 16:49:36,747 [INFO] MainThread [CCTP] progress 75/100 (75.0%), elapsed=56.9s
+2025-11-26 16:49:40,847 [INFO] MainThread [CCTP] progress 80/100 (80.0%), elapsed=61.0s
+2025-11-26 16:49:41,126 [ERROR] ThreadPoolExecutor-0_3 tx=0x22d42077a263b0e635f2c98c1d9eb2069e5d4f2954cf8f9f79eb273661875ce2 job_id=b2V0aC8weDhmMGExNGRiYTRiMDdiMGJlZjI5NDNhZDkwZmFhNmMwNzllMjI3N2VhZjg0YzM4NDRiY2U4ZWZlNTg0MGI3ODQ /api/status request exception: ReadTimeout(ReadTimeoutError("HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)"))
+2025-11-26 16:49:42,025 [INFO] MainThread [CCTP] progress 85/100 (85.0%), elapsed=62.2s
+2025-11-26 16:49:45,991 [INFO] MainThread [CCTP] progress 90/100 (90.0%), elapsed=66.1s
+2025-11-26 16:49:49,935 [ERROR] ThreadPoolExecutor-0_7 tx=0xf5cc7f95badbb88738b302d4d6b3ca6879cc8efe33575e9675c6583166cbedf9 job_id=bGluZWEvMHhiODUwYzEwZjU5NTA1NDI4YjczNjQ5NjhlNzFiYjZhOTJkZDgwMmExNDBlM2Y3ZTBkMGJmMmQzOTgxMTNiMzA4 /api/status request exception: SSLError(MaxRetryError("HTTPSConnectionPool(host='usdc.range.org', port=443): Max retries exceeded with url: /api/status?id=bGluZWEvMHhiODUwYzEwZjU5NTA1NDI4YjczNjQ5NjhlNzFiYjZhOTJkZDgwMmExNDBlM2Y3ZTBkMGJmMmQzOTgxMTNiMzA4 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')))"))
+2025-11-26 16:49:50,601 [INFO] MainThread [CCTP] progress 95/100 (95.0%), elapsed=70.8s
+2025-11-26 16:49:55,198 [ERROR] ThreadPoolExecutor-0_1 tx=0x1f1d6bfa76d61eafc17b176377f45b0dd46a9a3d1e93e7c650133ab510c8c45a job_id=b2V0aC8weDgxMDdmZDZmOWRkNWJlNTk0MzMyODRhNjYyN2M2M2E5ZWZlNmNmYjk5MTczYjZjZDQzN2IxNmIyMWY0Zjc1MzQ /api/status request exception: ReadTimeout(ReadTimeoutError("HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)"))
+2025-11-26 16:49:56,810 [ERROR] ThreadPoolExecutor-0_7 tx=0xf5cc7f95badbb88738b302d4d6b3ca6879cc8efe33575e9675c6583166cbedf9 /transactions request exception: ReadTimeout(ReadTimeoutError("HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)"))
+2025-11-26 16:50:06,198 [ERROR] ThreadPoolExecutor-0_7 tx=0xf5cc7f95badbb88738b302d4d6b3ca6879cc8efe33575e9675c6583166cbedf9 job_id=bGluZWEvMHhiODUwYzEwZjU5NTA1NDI4YjczNjQ5NjhlNzFiYjZhOTJkZDgwMmExNDBlM2Y3ZTBkMGJmMmQzOTgxMTNiMzA4 /api/status request exception: ReadTimeout(ReadTimeoutError("HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)"))
+2025-11-26 16:50:14,572 [ERROR] ThreadPoolExecutor-0_7 tx=0xf5cc7f95badbb88738b302d4d6b3ca6879cc8efe33575e9675c6583166cbedf9 /transactions request exception: ReadTimeout(ReadTimeoutError("HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)"))
+2025-11-26 16:50:25,109 [ERROR] ThreadPoolExecutor-0_7 tx=0xf5cc7f95badbb88738b302d4d6b3ca6879cc8efe33575e9675c6583166cbedf9 /transactions request exception: ReadTimeout(ReadTimeoutError("HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)"))
+2025-11-26 16:50:25,109 [ERROR] MainThread tx=0xf5cc7f95badbb88738b302d4d6b3ca6879cc8efe33575e9675c6583166cbedf9 final failure: FetchError("/transactions exception: HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)")
+Traceback (most recent call last):
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/connectionpool.py", line 773, in urlopen
+    self._prepare_proxy(conn)
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1042, in _prepare_proxy
+    conn.connect()
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+               ^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/ssl.py", line 1042, in _create
+    self.do_handshake()
+  File "/opt/conda/lib/python3.12/ssl.py", line 1320, in do_handshake
+    self._sslobj.do_handshake()
+TimeoutError: _ssl.c:983: The handshake operation timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/codespace/.local/lib/python3.12/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/util/retry.py", line 474, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/connectionpool.py", line 775, in urlopen
+    self._raise_timeout(
+  File "/home/codespace/.local/lib/python3.12/site-packages/urllib3/connectionpool.py", line 367, in _raise_timeout
+    raise ReadTimeoutError(
+urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspaces/cctp_bridge/src/main.py", line 125, in fetch_cctp_pair
+    r1 = requests.get(url1, timeout=HTTP_TIMEOUT, proxies=proxies, headers=tx_headers)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/requests/adapters.py", line 690, in send
+    raise ReadTimeout(e, request=request)
+requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspaces/cctp_bridge/src/main.py", line 231, in build_cctp_df
+    rec = fut.result()
+          ^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/opt/conda/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/tenacity/__init__.py", line 336, in wrapped_f
+    return copy(f, *args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/tenacity/__init__.py", line 475, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/tenacity/__init__.py", line 376, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/tenacity/__init__.py", line 418, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "/home/codespace/.local/lib/python3.12/site-packages/tenacity/__init__.py", line 185, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/home/codespace/.local/lib/python3.12/site-packages/tenacity/__init__.py", line 478, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/cctp_bridge/src/main.py", line 128, in fetch_cctp_pair
+    raise FetchError(f"/transactions exception: {e}")
+FetchError: /transactions exception: HTTPSConnectionPool(host='usdc.range.org', port=443): Read timed out. (read timeout=6.0)
+2025-11-26 16:50:25,120 [INFO] MainThread [CCTP] progress 100/100 (100.0%), elapsed=105.3s
+2025-11-26 16:50:25,123 [INFO] MainThread [CCTP] success 99/100, elapsed 105.28s

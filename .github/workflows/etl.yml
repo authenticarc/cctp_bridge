@@ -29,8 +29,8 @@ jobs:
 
       - name: Run ETL Dune -> CCTP -> CSV -> Dune Table
         env:
-          HTTP_TIMEOUT:     "6"
-          MAX_WORKERS:      "8"
+          HTTP_TIMEOUT:     "10"
+          MAX_WORKERS:      "128"
           OUTPUT_PATH:      "data/cctp_tx_mapping.csv"
         run: |
           python src/main.py

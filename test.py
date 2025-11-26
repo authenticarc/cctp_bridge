@@ -9,14 +9,14 @@ session.headers.update({
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0"
 })
 
-cookies = {
-    "_ga": "GA1.1.904511668.1764137977",
-    "cf_clearance": "p9RlA05Vq_J1A5Hol6Wl4hQEC5qzvLFOr.S3IBgV2hc-1764137981-1.2.1.1-kbprLeBJ.M50JQfWU5l3yGKL7auuYbT19p7AOYMR0G4_2mBcYlR_5CtOIeL.QE2lXM6660P6bruqAjzHkZfn3WF2PLSUErZaVs8KJ1SALvkmxkuIuGVsdZthGnOQNl2bJxw0e8HapW6ZEneXlP5qtl7rHAOTRas7pHteSereSqW0N7Uca0LusvhszLyYElEuB4SjwmmWlK1ormUW2CZ8bg.Sh1MMGEok6Jfo5Qu5kNw",
-    "ph_phc_zQDlkkBzhz2IiuDM3AQYHV9KOO72eEe0JyLNifbbHZh_posthog": "%7B%22distinct_id%22%3A%22019abed1-42f7-7ccb-9823-ce5c96b2e362%22%2C%22%24sesid%22%3A%5B1764138550945%2C%22019abed1-42f6-7fd9-ab02-5e5da3d7d376%22%2C1764137976566%5D%7D",
-    "_ga_FEZ2WGXW9F": "GS2.1.s1764137976$o1$g1$t1764138551$j58$l0$h1705058839",
-}
-for k, v in cookies.items():
-    session.cookies.set(k, v, domain=".range.org", path="/")
+# cookies = {
+#     "_ga": "GA1.1.904511668.1764137977",
+#     "cf_clearance": "p9RlA05Vq_J1A5Hol6Wl4hQEC5qzvLFOr.S3IBgV2hc-1764137981-1.2.1.1-kbprLeBJ.M50JQfWU5l3yGKL7auuYbT19p7AOYMR0G4_2mBcYlR_5CtOIeL.QE2lXM6660P6bruqAjzHkZfn3WF2PLSUErZaVs8KJ1SALvkmxkuIuGVsdZthGnOQNl2bJxw0e8HapW6ZEneXlP5qtl7rHAOTRas7pHteSereSqW0N7Uca0LusvhszLyYElEuB4SjwmmWlK1ormUW2CZ8bg.Sh1MMGEok6Jfo5Qu5kNw",
+#     "ph_phc_zQDlkkBzhz2IiuDM3AQYHV9KOO72eEe0JyLNifbbHZh_posthog": "%7B%22distinct_id%22%3A%22019abed1-42f7-7ccb-9823-ce5c96b2e362%22%2C%22%24sesid%22%3A%5B1764138550945%2C%22019abed1-42f6-7fd9-ab02-5e5da3d7d376%22%2C1764137976566%5D%7D",
+#     "_ga_FEZ2WGXW9F": "GS2.1.s1764137976$o1$g1$t1764138551$j58$l0$h1705058839",
+# }
+# for k, v in cookies.items():
+#     session.cookies.set(k, v, domain=".range.org", path="/")
 
 # ====== 第一步：访问 /transactions 拿 id ======
 tx_url = "https://usdc.range.org/transactions?s={}".format(transactions)

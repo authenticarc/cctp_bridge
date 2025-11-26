@@ -234,8 +234,8 @@ def main():
     df_out.to_csv(CSV_PATH, index=False)
     print(f"CSV 写入 {CSV_PATH}")
 
-    print("Step 4) 更新 Dune 表结构")
-    ensure_table()
+    # print("Step 4) 更新 Dune 表结构")
+    # ensure_table()
 
     print("Step 5) 上传数据到 Dune")
     insert_csv(CSV_PATH)

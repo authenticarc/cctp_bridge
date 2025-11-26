@@ -1,4 +1,4 @@
-name: dune-bridgers-etl
+name: dune-cctp-etl
 
 on:
   workflow_dispatch: {}
@@ -30,7 +30,7 @@ jobs:
       - name: Run ETL Dune -> CCTP -> CSV -> Dune Table
         env:
           HTTP_TIMEOUT:     "6"
-          MAX_WORKERS:      "128"
+          MAX_WORKERS:      "8"
           OUTPUT_PATH:      "data/cctp_tx_mapping.csv"
         run: |
           python src/main.py

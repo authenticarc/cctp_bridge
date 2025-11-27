@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import json
 import time
-import random
-import re
-import threading
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import logging
+from threading import Thread, Lock
+from queue import Queue
 
 import pandas as pd
-import requests
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 from dune_client.client import DuneClient
 from dune_client.query import QueryBase
-from playwright.sync_api import sync_playwright
-
-import logging
+from playwright.sync_api import sync_playwright, Page
+from playwright_stealth import Stealth
 
 # -----------------------------
 # Config
@@ -34,8 +30,8 @@ DUNE_TABLE_FULL = f"{DUNE_NAMESPACE}.{DUNE_TABLE_NAME}"
 
 CSV_PATH = "data/cctp_tx_mapping.csv"
 
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
-HTTP_TIMEOUT = float(os.getenv("HTTP_TIMEOUT", "6.0"))
+HTTP_TIMEOUT = float(os.getenv("HTTP_TIMEOUT", "15.0"))  # 页面加载超时（秒）
+N_BROWSERS = int(os.getenv("N_BROWSERS", "5"))           # 浏览器池大小（并发度）
 
 DUNE = DuneClient(DUNE_API_KEY)
 
@@ -54,7 +50,7 @@ logging.basicConfig(
 # -----------------------------
 # Step 1: load tx_hash from Dune
 # -----------------------------
-def load_dune_hashes():
+def load_dune_hashes() -> pd.DataFrame:
     query = QueryBase(
         name="CCTP Hash Fetcher",
         query_id=DUNE_QUERY_ID,
@@ -62,20 +58,56 @@ def load_dune_hashes():
     df = DUNE.run_query_dataframe(query, performance="medium")
 
     if DUNE_HASH_COLUMN not in df.columns:
-        raise KeyError(f"Dune result is missing column {DUNE_HASH_COLUMN}, actual columns: {df.columns}")
+        raise KeyError(
+            f"Dune result is missing column {DUNE_HASH_COLUMN}, actual columns: {df.columns}"
+        )
 
     df = df[[DUNE_HASH_COLUMN]].dropna().drop_duplicates()
     df[DUNE_HASH_COLUMN] = df[DUNE_HASH_COLUMN].astype(str).str.strip()
     df = df[df[DUNE_HASH_COLUMN] != ""]
+    logging.info("Loaded %d unique tx_hash from Dune", len(df))
     return df
 
 
 class FetchError(Exception):
+    """For tenacity retries."""
     pass
 
 
 # -----------------------------
-# Step 3: fetch CCTP info for a single tx
+# Step 2: selector（你给的那两个）
+# -----------------------------
+SENDER_SELECTOR = (
+    "body > div > div.mx-4.md\\:mx-20.flex.flex-col.items-center.justify-center.gap-4 "
+    "> div.flex.flex-col.gap-5xl.w-full.mt-14 "
+    "> div.whitespace-nowrap "
+    "> div.flex.flex-col.gap-11.pt-3xl "
+    "> div.flex.flex-col.gap-5xl.w-full "
+    "> div.flex.flex-col.gap-9 "
+    "> div:nth-child(1) "
+    "> div.flex.flex-col.gap-1.w-full "
+    "> div.flex.flex-col.sm\\:flex-row.gap-md.sm\\:items-center.w-full "
+    "> div.flex.w-full.sm\\:w-\\[calc\\(100\\%-250px\\)\\].items-center "
+    "> div > div > div:nth-child(2)"
+)
+
+RECEIVER_SELECTOR = (
+    "body > div > div.mx-4.md\\:mx-20.flex.flex-col.items-center.justify-center.gap-4 "
+    "> div.flex.flex-col.gap-5xl.w-full.mt-14 "
+    "> div.whitespace-nowrap "
+    "> div.flex.flex-col.gap-11.pt-3xl "
+    "> div.flex.flex-col.gap-5xl.w-full "
+    "> div.flex.flex-col.gap-9 "
+    "> div:nth-child(2) "
+    "> div.flex.flex-col.gap-1.w-full "
+    "> div.flex.flex-col.sm\\:flex-row.gap-md.sm\\:items-center.w-full "
+    "> div.flex.w-full.sm\\:w-\\[calc\\(100\\%-250px\\)\\].items-center "
+    "> div > div > div:nth-child(2)"
+)
+
+
+# -----------------------------
+# Step 3: 在「已有 page」上抓一笔（有重试）
 # -----------------------------
 @retry(
     reraise=True,
@@ -83,191 +115,143 @@ class FetchError(Exception):
     wait=wait_exponential(multiplier=0.5, min=0.5, max=5),
     retry=retry_if_exception_type(FetchError),
 )
-def fetch_status(job_id: str):
-    with sync_playwright() as p:
-        # 如果需要代理，在这里加 proxy={"server": "...", "username": "...", "password": "..."}
-        request_context = p.request.new_context(
-            base_url="https://usdc.range.org",
-            extra_http_headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                              "AppleWebKit/537.36 (KHTML, like Gecko) "
-                              "Chrome/142.0.0.0 Safari/537.36",
-                "accept": "application/json, text/plain, */*",
-            },
+def fetch_sender_receiver_on_page(tx_hash: str, page: Page) -> dict | None:
+    """
+    输入：一个 tx_hash 和该线程持有的 page
+    输出：包含 query_tx_hash / sender_address / receiver_address 的 dict
+    """
+    tx_url = f"https://usdc.range.org/transactions?s={tx_hash}"
+    logging.info("Fetching tx=%s url=%s", tx_hash, tx_url)
+
+    try:
+        page.goto(tx_url, wait_until="networkidle", timeout=HTTP_TIMEOUT * 1000)
+
+        sender_el = page.wait_for_selector(SENDER_SELECTOR, timeout=10000)
+        receiver_el = page.wait_for_selector(RECEIVER_SELECTOR, timeout=10000)
+
+        sender_txt = sender_el.inner_text().strip()
+        receiver_txt = receiver_el.inner_text().strip()
+
+        return {
+            "query_tx_hash": tx_hash.lower(),
+            "sender_address": sender_txt,
+            "receiver_address": receiver_txt,
+        }
+
+    except Exception as e:
+        logging.warning("tx=%s fetch error (will retry if attempts left): %s", tx_hash, repr(e))
+        # 抛 FetchError 触发 tenacity 重试
+        raise FetchError(f"fetch_sender_receiver failed for tx={tx_hash}: {e}") from e
+
+
+# -----------------------------
+# Step 4: 浏览器工作线程（每个线程一个 browser + page）
+# -----------------------------
+def browser_worker(name: str, task_queue: Queue, results: list, lock: Lock):
+    """
+    每个 worker 线程：
+      - 初始化自己的 Playwright + Browser + Page（挂 rotating proxy）
+      - 不断从队列中取 tx_hash，顺序处理
+      - 处理完所有任务后退出
+    """
+    logging.info("%s starting", name)
+    stealth = Stealth()
+    with stealth.use_sync(sync_playwright()) as p:
+        browser = p.chromium.launch(
+            headless=True,
             proxy={
                 "server": "http://b2bcc08abc0815ee.qzc.na.ipidea.online:2336",
                 "username": "clyderen-zone-custom",
                 "password": "123456",
             },
         )
+        page = browser.new_page()
 
         try:
-            resp = request_context.get(f"/api/status?id={job_id}", timeout=100000)
-            data = resp.json()        
-            return data
-        except:
-            logging.error(
-                "job_id=%s playwright wrong",
-                job_id,
-            )
-            return None
-    
-@retry(
-    reraise=True,
-    stop=stop_after_attempt(5),
-    wait=wait_exponential(multiplier=0.5, min=0.5, max=5),
-    retry=retry_if_exception_type(FetchError),
-)
-def fetch_cctp_pair(tx_hash: str) -> dict | None:
-    """
-    Input: one transaction hash (string)
-    Output: dict with sender_tx_hash / receiver_tx_hash and related fields, or None
-    """
+            while True:
+                tx = task_queue.get()
+                if tx is None:
+                    # 取到哨兵值，说明没有任务了
+                    task_queue.task_done()
+                    logging.info("%s got sentinel, exiting", name)
+                    break
 
-    tx_headers = {
-        "authority": "usdc.range.org",
-        "method": "GET",
-        "path": "/transactions?s={}".format(tx_hash),
-        "scheme": "https",
-        "accept": "*/*",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-        "next-router-state-tree": "%5B%22%22%2C%7B%22children%22%3A%5B%22__PAGE__%3F%7B%5C%22subExplorerConfigKey%5C%22%3A%5C%22usdc%5C%22%7D%22%2C%7B%7D%5D%7D%2Cnull%2Cnull%2Ctrue%5D",
-        "next-url": "/",
-        "priority": "u=1, i",
-        "rsc": "1",
-        "sec-ch-ua": "\"Chromium\";v=\"142\", \"Microsoft Edge\";v=\"142\", \"Not_A Brand\";v=\"99\"",
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"Windows\"",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0"
-    }
+                try:
+                    rec = fetch_sender_receiver_on_page(tx, page)
+                except Exception as e:
+                    logging.exception("%s tx=%s final failure after retries: %s", name, tx, repr(e))
+                    rec = None
 
-    # If you want to enable proxy, uncomment this and set proxies accordingly
-    # proxies = {
-    #     "http": 'http://user:pass@host:port',
-    #     "https": 'http://user:pass@host:port',
-    # }
-    proxies = {
-        "http": 'http://clyderen-zone-custom:123456@b2bcc08abc0815ee.qzc.na.ipidea.online:2336',
-        "https": 'http://clyderen-zone-custom:123456@b2bcc08abc0815ee.qzc.na.ipidea.online:2336',
-    }
+                if isinstance(rec, dict):
+                    with lock:
+                        results.append(rec)
 
-    # -------- Step 1: call /transactions -------
-    url1 = f"https://usdc.range.org/transactions?s={tx_hash}"
-    try:
-        r1 = requests.get(url1, timeout=HTTP_TIMEOUT, proxies=proxies, headers=tx_headers)
-    except Exception as e:
-        logging.error("tx=%s /transactions request exception: %s", tx_hash, repr(e))
-        raise 
-
-    if r1.status_code != 200:
-        logging.error(
-            "tx=%s /transactions HTTP %s, body_prefix=%s",
-            tx_hash, r1.status_code, r1.text[:300],
-        )
-        raise 
-
-    text = r1.text
-    m = re.search(r'id=([A-Za-z0-9_-]+);', text)
-    if not m:
-        logging.warning("tx=%s no job_id found in /transactions response", tx_hash)
-        return None
-
-    job_id = m.group(1)
-
-    # -------- Step 2: call /api/status -------
-    data = fetch_status(job_id)
-
-    try:
-
-        payment = data.get("payment", {})
-
-        if not isinstance(payment, dict):
-            logging.warning(
-                "tx=%s job_id=%s /api/status missing 'payment' field, data_keys=%s",
-                tx_hash, job_id, list(data.keys()) if isinstance(data, dict) else type(data),
-            )
-            return None
-
-        return {
-            "query_tx_hash": tx_hash.lower(),
-            "sender_tx_hash": payment.get("sender_tx_hash"),
-            "receiver_tx_hash": payment.get("receiver_tx_hash"),
-            "sender_address": payment.get("sender", {}).get("address"),
-            "receiver_address": payment.get("receiver", {}).get("address"),
-            "sender_chain": payment.get("sender", {}).get("network"),
-            "receiver_chain": payment.get("receiver", {}).get("network"),
-            "bridge_type": payment.get("type"),
-            "status": payment.get("status"),
-            "job_id": job_id,
-        }
-    except:
-        return None
+                task_queue.task_done()
+        finally:
+            browser.close()
+            logging.info("%s browser closed", name)
 
 
-# -----------------------------
-# Step 4: batch fetch with concurrency
-# -----------------------------
 def build_cctp_df(df_hash: pd.DataFrame) -> pd.DataFrame:
     hashes = df_hash[DUNE_HASH_COLUMN].tolist()
     total = len(hashes)
 
-    print(f"[CCTP] total tasks={total}, workers={MAX_WORKERS}")
-    logging.info("[CCTP] start, total=%d, workers=%d", total, MAX_WORKERS)
+    logging.info(
+        "[CCTP] start, total=%d, browsers=%d (browser pool with rotating proxy)",
+        total,
+        N_BROWSERS,
+    )
+    print(f"[CCTP] total tasks={total}, browsers={N_BROWSERS}")
 
-    results = []
+    task_queue: Queue = Queue()
+    results: list[dict] = []
+    lock = Lock()
+
+    # 把任务塞进队列
+    for h in hashes:
+        task_queue.put(h)
+
+    # 加 N_BROWSERS 个哨兵 None，表示任务结束
+    for _ in range(N_BROWSERS):
+        task_queue.put(None)
+
+    # 启动浏览器线程
+    threads: list[Thread] = []
     t0 = time.time()
 
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
-        fut_map = {ex.submit(fetch_cctp_pair, h): h for h in hashes}
-        done = 0
-        for fut in as_completed(fut_map):
-            tx = fut_map[fut]
-            try:
-                rec = fut.result()
-            except Exception as e:
-                # After all tenacity retries, failures end up here
-                logging.exception("tx=%s final failure: %s", tx, repr(e))
-                rec = None
-            results.append(rec)
-            done += 1
+    for i in range(N_BROWSERS):
+        t = Thread(
+            target=browser_worker,
+            name=f"browser-worker-{i+1}",
+            args=(f"browser-worker-{i+1}", task_queue, results, lock),
+            daemon=True,
+        )
+        t.start()
+        threads.append(t)
 
-            if done % max(5, total // 20 or 1) == 0:
-                elapsed = time.time() - t0
-                logging.info("[CCTP] progress %d/%d (%.1f%%), elapsed=%.1fs",
-                             done, total, done / total * 100, elapsed)
-                print(f"[CCTP] {done}/{total} ({done/total:4.1%}) ...")
+    # 阻塞直到所有任务完成
+    task_queue.join()
 
-    # filter out None
-    rows = [r for r in results if isinstance(r, dict)]
-    if not rows:
+    elapsed = time.time() - t0
+    logging.info("[CCTP] all tasks done, elapsed=%.2fs, results=%d", elapsed, len(results))
+    print(f"[CCTP] all tasks done, elapsed={elapsed:.2f}s, results={len(results)}")
+
+    if not results:
         logging.warning("[CCTP] all tasks failed or returned no result")
-        return pd.DataFrame(columns=[
-            "query_tx_hash",
-            "sender_tx_hash",
-            "receiver_tx_hash",
-            "sender_address",
-            "receiver_address",
-            "sender_chain",
-            "receiver_chain",
-            "bridge_type",
-            "status",
-            "job_id",
-        ])
+        return pd.DataFrame(columns=["query_tx_hash", "sender_address", "receiver_address"])
 
-    df = pd.DataFrame(rows).drop_duplicates()
-    logging.info("[CCTP] success %d/%d, elapsed %.2fs", len(df), total, time.time() - t0)
-    print(f"[CCTP] success {len(df)}/{total}, elapsed {time.time()-t0:.2f}s")
+    df = pd.DataFrame(results).drop_duplicates()
     return df
 
 
 # -----------------------------
-# Step 5: create / update Dune table
+# Step 5: Dune table 逻辑（三列版本）
 # -----------------------------
 def ensure_table():
+    """
+    如果你之后想重新建表，可以打开 main() 里 ensure_table() 调用。
+    这里只保留三列：query_tx_hash, sender_address, receiver_address。
+    """
     try:
         DUNE.delete_table(DUNE_NAMESPACE, DUNE_TABLE_NAME)
     except Exception:
@@ -276,22 +260,15 @@ def ensure_table():
 
     schema = [
         {"name": "query_tx_hash", "type": "varchar"},
-        {"name": "sender_tx_hash", "type": "varchar"},
-        {"name": "receiver_tx_hash", "type": "varchar"},
         {"name": "sender_address", "type": "varchar"},
         {"name": "receiver_address", "type": "varchar"},
-        {"name": "sender_chain", "type": "varchar"},
-        {"name": "receiver_chain", "type": "varchar"},
-        {"name": "bridge_type", "type": "varchar"},
-        {"name": "status", "type": "varchar"},
-        {"name": "job_id", "type": "varchar"},
     ]
 
     try:
         DUNE.create_table(
             namespace=DUNE_NAMESPACE,
             table_name=DUNE_TABLE_NAME,
-            description="CCTP sender/receiver tx hash mapping",
+            description="CCTP sender/receiver address mapping",
             is_private=False,
             schema=schema,
         )
@@ -314,14 +291,14 @@ def main():
     print("Step 1) Load tx_hash from Dune")
     df_hash = load_dune_hashes()
 
-    print("Step 2) Fetch CCTP tx mapping via API")
+    print("Step 2) Fetch CCTP sender/receiver via browser pool")
     df_out = build_cctp_df(df_hash)
 
     print("Step 3) Write CSV")
     df_out.to_csv(CSV_PATH, index=False)
     print(f"CSV written to {CSV_PATH}")
 
-    print("Step 4) Ensure Dune table exists")
+    print("Step 4) Ensure Dune table exists (optional)")
     # ensure_table()
 
     print("Step 5) Upload CSV to Dune table")

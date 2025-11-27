@@ -14,6 +14,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 
 from dune_client.client import DuneClient
 from dune_client.query import QueryBase
+from playwright.sync_api import sync_playwright
 
 import logging
 
@@ -82,6 +83,41 @@ class FetchError(Exception):
     wait=wait_exponential(multiplier=0.5, min=0.5, max=5),
     retry=retry_if_exception_type(FetchError),
 )
+def fetch_status(job_id: str):
+    with sync_playwright() as p:
+        # 如果需要代理，在这里加 proxy={"server": "...", "username": "...", "password": "..."}
+        request_context = p.request.new_context(
+            base_url="https://usdc.range.org",
+            extra_http_headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                              "AppleWebKit/537.36 (KHTML, like Gecko) "
+                              "Chrome/142.0.0.0 Safari/537.36",
+                "accept": "application/json, text/plain, */*",
+            },
+            proxy={
+                "server": "http://b2bcc08abc0815ee.qzc.na.ipidea.online:2336",
+                "username": "clyderen-zone-custom",
+                "password": "123456",
+            },
+        )
+
+        try:
+            resp = request_context.get(f"/api/status?id={job_id}", timeout=100000)
+            data = resp.json()        
+            return data
+        except:
+            logging.error(
+                "job_id=%s playwright wrong",
+                job_id,
+            )
+            return None
+    
+@retry(
+    reraise=True,
+    stop=stop_after_attempt(5),
+    wait=wait_exponential(multiplier=0.5, min=0.5, max=5),
+    retry=retry_if_exception_type(FetchError),
+)
 def fetch_cctp_pair(tx_hash: str) -> dict | None:
     """
     Input: one transaction hash (string)
@@ -125,88 +161,51 @@ def fetch_cctp_pair(tx_hash: str) -> dict | None:
         r1 = requests.get(url1, timeout=HTTP_TIMEOUT, proxies=proxies, headers=tx_headers)
     except Exception as e:
         logging.error("tx=%s /transactions request exception: %s", tx_hash, repr(e))
-        raise FetchError(f"/transactions exception: {e}")
+        raise 
 
     if r1.status_code != 200:
         logging.error(
             "tx=%s /transactions HTTP %s, body_prefix=%s",
             tx_hash, r1.status_code, r1.text[:300],
         )
-        raise FetchError(f"/transactions HTTP {r1.status_code}")
+        raise 
 
     text = r1.text
     m = re.search(r'id=([A-Za-z0-9_-]+);', text)
     if not m:
         logging.warning("tx=%s no job_id found in /transactions response", tx_hash)
-        logging.warning(text)
         return None
 
     job_id = m.group(1)
 
-    status_headers = {
-        "authority": "usdc.range.org",
-        "method": "GET",
-        "path": f"/api/status?id={job_id}",
-        "scheme": "https",
-        "accept": "application/json, text/plain, */*",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-        "priority": "u=1, i",
-        "referer": f"https://usdc.range.org/status?id={job_id}",
-        "sec-ch-ua": "\"Chromium\";v=\"142\", \"Microsoft Edge\";v=\"142\", \"Not_A Brand\";v=\"99\"",
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"Windows\"",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0"
-    }
-
     # -------- Step 2: call /api/status -------
-    url2 = f"https://usdc.range.org/api/status?id={job_id}"
-    try:
-        r2 = requests.get(url2, timeout=HTTP_TIMEOUT, proxies=proxies, headers=status_headers)
-    except Exception as e:
-        logging.error("tx=%s job_id=%s /api/status request exception: %s", tx_hash, job_id, repr(e))
-        raise FetchError(f"/api/status exception: {e}")
-
-    if r2.status_code != 200:
-        logging.error(
-            "tx=%s job_id=%s /api/status HTTP %s, body_prefix=%s",
-            tx_hash, job_id, r2.status_code, r2.text[:300],
-        )
-        raise FetchError(f"/api/status HTTP {r2.status_code}")
+    data = fetch_status(job_id)
 
     try:
-        data = r2.json()
-    except Exception as e:
-        logging.error(
-            "tx=%s job_id=%s /api/status JSON decode error: %s, text_prefix=%s",
-            tx_hash, job_id, repr(e), r2.text[:300],
-        )
-        raise FetchError("invalid json")
 
-    payment = data.get("payment", {})
+        payment = data.get("payment", {})
 
-    if not isinstance(payment, dict):
-        logging.warning(
-            "tx=%s job_id=%s /api/status missing 'payment' field, data_keys=%s",
-            tx_hash, job_id, list(data.keys()) if isinstance(data, dict) else type(data),
-        )
+        if not isinstance(payment, dict):
+            logging.warning(
+                "tx=%s job_id=%s /api/status missing 'payment' field, data_keys=%s",
+                tx_hash, job_id, list(data.keys()) if isinstance(data, dict) else type(data),
+            )
+            return None
+
+        return {
+            "query_tx_hash": tx_hash.lower(),
+            "sender_tx_hash": payment.get("sender_tx_hash"),
+            "receiver_tx_hash": payment.get("receiver_tx_hash"),
+            "sender_address": payment.get("sender", {}).get("address"),
+            "receiver_address": payment.get("receiver", {}).get("address"),
+            "sender_chain": payment.get("sender", {}).get("network"),
+            "receiver_chain": payment.get("receiver", {}).get("network"),
+            "bridge_type": payment.get("type"),
+            "status": payment.get("status"),
+            "job_id": job_id,
+        }
+    except:
         return None
-
-    return {
-        "query_tx_hash": tx_hash.lower(),
-        "sender_tx_hash": payment.get("sender_tx_hash"),
-        "receiver_tx_hash": payment.get("receiver_tx_hash"),
-        "sender_address": payment.get("sender", {}).get("address"),
-        "receiver_address": payment.get("receiver", {}).get("address"),
-        "sender_chain": payment.get("sender", {}).get("network"),
-        "receiver_chain": payment.get("receiver", {}).get("network"),
-        "bridge_type": payment.get("type"),
-        "status": payment.get("status"),
-        "job_id": job_id,
-    }
 
 
 # -----------------------------
